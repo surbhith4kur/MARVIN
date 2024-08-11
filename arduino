@@ -1,0 +1,119 @@
+const int LEFT_L_IS = 4;
+const int LEFT_L_EN = 2;
+const int LEFT_L_PWM = 5;
+const int LEFT_R_IS = 7;
+const int LEFT_R_EN = 1;
+const int LEFT_R_PWM = 3;
+const int RIGHT_L_IS = 13;
+const int RIGHT_L_EN = 12;
+const int RIGHT_L_PWM = 6;
+const int RIGHT_R_IS = 8;
+const int RIGHT_R_EN = 11;
+const int RIGHT_R_PWM = 10;
+
+int trigPin = 9;
+int echoPin = A1;
+
+void setup() {
+  pinMode(LEFT_L_IS, OUTPUT);
+  digitalWrite(LEFT_L_IS, LOW);
+  pinMode(LEFT_L_EN, OUTPUT);
+  digitalWrite(LEFT_L_EN, HIGH);
+  pinMode(LEFT_L_PWM, OUTPUT);
+  pinMode(LEFT_R_IS, OUTPUT);
+  digitalWrite(LEFT_R_IS, LOW);
+  pinMode(LEFT_R_EN, OUTPUT);
+  digitalWrite(LEFT_R_EN, HIGH);
+  pinMode(LEFT_R_PWM, OUTPUT);
+  pinMode(RIGHT_L_IS, OUTPUT);
+  digitalWrite(RIGHT_L_IS, LOW);
+  pinMode(RIGHT_L_EN, OUTPUT);
+  digitalWrite(RIGHT_L_EN, HIGH);
+  pinMode(RIGHT_L_PWM, OUTPUT);
+  pinMode(RIGHT_R_IS, OUTPUT);
+  digitalWrite(RIGHT_R_IS, LOW);
+  pinMode(RIGHT_R_EN, OUTPUT);
+  digitalWrite(RIGHT_R_EN, HIGH);
+  pinMode(RIGHT_R_PWM, OUTPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  digitalWrite(trigPin, LOW);
+  Serial.begin(9600);
+}
+void forward(int velocity)
+{
+  analogWrite(LEFT_L_PWM, velocity);
+  analogWrite(LEFT_R_PWM, 0);
+  analogWrite(RIGHT_L_PWM, velocity);
+  analogWrite(RIGHT_R_PWM, 0);
+}
+void sharp_right(int velocity)
+{
+  analogWrite(LEFT_L_PWM, velocity);
+  analogWrite(LEFT_R_PWM, 0);
+  analogWrite(RIGHT_L_PWM, 0);
+  analogWrite(RIGHT_R_PWM, velocity);
+}
+void sharp_left(int velocity)
+{
+  analogWrite(LEFT_L_PWM, 0);
+  analogWrite(LEFT_R_PWM, velocity);
+  analogWrite(RIGHT_L_PWM, velocity);
+  analogWrite(RIGHT_R_PWM, 0);
+}
+void right(int velocity)
+{
+  analogWrite(LEFT_L_PWM, velocity);
+  analogWrite(LEFT_R_PWM, 0);
+  analogWrite(RIGHT_L_PWM, 0);
+  analogWrite(RIGHT_R_PWM, velocity);
+}
+void left(int velocity)
+{
+  analogWrite(LEFT_L_PWM, velocity-100);
+  analogWrite(LEFT_R_PWM, velocity);
+  analogWrite(RIGHT_L_PWM, velocity);
+  analogWrite(RIGHT_R_PWM, velocity-100);
+}
+void back(int velocity)
+{
+  analogWrite(LEFT_L_PWM, 0);
+  analogWrite(LEFT_R_PWM, velocity);
+  analogWrite(RIGHT_L_PWM, 0);
+  analogWrite(RIGHT_R_PWM, velocity);
+}
+void brake() {
+  analogWrite(LEFT_L_PWM, 0);
+  analogWrite(LEFT_R_PWM, 0);
+  analogWrite(RIGHT_L_PWM, 0);
+  analogWrite(RIGHT_R_PWM, 0);
+}
+void loop() {
+  
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  float duration_us = pulseIn(echoPin, HIGH);
+  float distance_cm = 0.017 * duration_us;
+  int velocity = 250;
+  Serial.println(distance_cm);
+  int randomNum = random(0,1);
+  if (distance_cm < 100){
+    if(randomNum == 1){
+      left(velocity);
+    }
+    else{
+      right(velocity);
+    }
+    
+    //Serial.println("left");
+    //delay(1000);
+  }
+  else if(distance_cm > 100){
+    back(velocity);  
+    //Serial.println("forward");
+    //delay(1000);  
+  }
+  delay(1);
+ 
+}
